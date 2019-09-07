@@ -2,7 +2,7 @@
     <string name="app_name">Popular Movies Stage 1</string>
 
     <!-- API Key here-->
-    <string name="api_key">8044b444f2656305d9c58d04e4ffcb67</string>
+    <string name="api_key">Your API key here</string>
     <string name="api_url">http://api.themoviedb.org/3/movie/</string>
     <string name="api_poster_url">http://image.tmdb.org/t/p/w185</string>
     <string name="image_description">Poster Image</string>
