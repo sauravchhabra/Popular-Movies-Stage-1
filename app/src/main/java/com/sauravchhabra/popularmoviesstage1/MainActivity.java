@@ -59,16 +59,6 @@ public class MainActivity extends AppCompatActivity {
     private TextView mEmptyView;
     private static final String LOG_TAG = MainActivity.class.getName();
 
-
-    private boolean isConnected() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) this.getSystemService(
-                Context.CONNECTIVITY_SERVICE);
-
-        //Check is device has an active internet connection
-        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-        return networkInfo != null && networkInfo.isConnectedOrConnecting();
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
@@ -76,7 +66,6 @@ public class MainActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu, menu);
         return true;
     }
-
 
 
     @Override
@@ -150,6 +139,17 @@ public class MainActivity extends AppCompatActivity {
 
         mFetchMovies = new FetchMovies();
         mFetchMovies.execute(mSort_by);
+    }
+
+
+
+    private boolean isConnected() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) this.getSystemService(
+                Context.CONNECTIVITY_SERVICE);
+
+        //Check is device has an active internet connection
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        return networkInfo != null && networkInfo.isConnectedOrConnecting();
     }
 
     public class FetchMovies extends AsyncTask<String, Void, Void> {

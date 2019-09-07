@@ -2,9 +2,9 @@
     <string name="app_name">Popular Movies Stage 1</string>
 
     <!-- API Key here-->
-    <string name="api_key">your api key here</string>
+    <string name="api_key">8044b444f2656305d9c58d04e4ffcb67</string>
     <string name="api_url">http://api.themoviedb.org/3/movie/</string>
-
+    <string name="api_poster_url">http://image.tmdb.org/t/p/w185</string>
     <string name="image_description">Poster Image</string>
 
     <string name="error_message">Error loading content. Please try again later</string>
@@ -28,6 +28,8 @@
     <string name="released_on">Released On</string>
 
     <string name="rating">Average Rating:&#x20;</string>
+
+    <string name="plot">Overview:&#x20;</string>
 
     <string name="default_message">Default Message</string>
     <string name="no_connection">No connection. Please try later.</string>
