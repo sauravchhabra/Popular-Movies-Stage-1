@@ -72,8 +72,9 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        //handle click on sort settings
-
+        //If the Settings option is tapped, then show the user with an Alert Dialog
+        //to choose their preference from the list which will then update the activity
+        //if user changes their preference
         if (id == R.id.action_settings) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             final SharedPreferences.Editor editor=mSharedPreferences.edit();
@@ -96,9 +97,9 @@ public class MainActivity extends AppCompatActivity {
                     });
             builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
-                    //user clicked save
+                    //If user clicked Save then apply the changes to SharedPreference
                     editor.apply();
-                    //refresh activity
+                    //After saving, refresh the activity
                     Intent intent = new Intent(MainActivity.this, MainActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
@@ -106,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
             });
             builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
-                    //user clicked cancel
+                    //Do nothing, since user clicked cancel
                 }
             });
             AlertDialog dialog = builder.create();
@@ -123,10 +124,14 @@ public class MainActivity extends AppCompatActivity {
         mEmptyView = findViewById(R.id.tv_error_message_display);
         progressBar = findViewById(R.id.pb_loading_indicator);
         progressBar.setVisibility(View.VISIBLE);
+
+        // Get the saved preferences
         mSharedPreferences = getSharedPreferences("popular_movies",MODE_PRIVATE);
         mSort_by = mSharedPreferences.getString("sort_type", "popular");
         mGridView = findViewById(R.id.grid_view);
 
+        //Set a click listener on GridView which will open the DetailActivity with the
+        //corresponding ID
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -137,21 +142,26 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        //Start the Asynctask with the current sorting option selected by the user.
         mFetchMovies = new FetchMovies();
         mFetchMovies.execute(mSort_by);
     }
 
 
 
+    //Helper method to check if the device has an active internet connection
     private boolean isConnected() {
         ConnectivityManager connectivityManager = (ConnectivityManager) this.getSystemService(
                 Context.CONNECTIVITY_SERVICE);
 
-        //Check is device has an active internet connection
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
         return networkInfo != null && networkInfo.isConnectedOrConnecting();
     }
 
+    /**
+     * AsyncTask class to connect to themovieDB database in the background and publish the result
+     * after the JSON has been parsed
+     */
     public class FetchMovies extends AsyncTask<String, Void, Void> {
 
         @Override
@@ -192,7 +202,9 @@ public class MainActivity extends AppCompatActivity {
 
                 JSONObject result = new JSONObject(moviesJson);
                 JSONArray array = result.optJSONArray("results");
-                JSONObject poster, id;
+                JSONObject poster;
+
+                //While there are still items in the array, keep looping through all of them
                 for (int i = 0; i < array.length(); i++) {
                     poster = array.optJSONObject(i);
                     mIds.add(poster.optInt("id"));
@@ -221,10 +233,13 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Void result) {
+            //After parsing the JSON, load the image in MainActivity with the help of Picasso library
+            //which has been defined in the Adapter Class
             MoviesAdapter moviesAdapter = new MoviesAdapter(MainActivity.this, mPosters);
             progressBar.setVisibility(View.GONE);
             mEmptyView.setVisibility(View.GONE);
 
+            //If device has no connection, then change the error message to current string
             if (!isConnected()) {
                 mEmptyView.setVisibility(View.VISIBLE);
                 mEmptyView.setText(R.string.no_connection);
@@ -233,6 +248,7 @@ public class MainActivity extends AppCompatActivity {
                 mEmptyView.setVisibility(View.GONE);
             }
 
+            //Set the adapter on the GridView
             try {
                 mGridView.setAdapter(moviesAdapter);
             } catch (Exception e) {

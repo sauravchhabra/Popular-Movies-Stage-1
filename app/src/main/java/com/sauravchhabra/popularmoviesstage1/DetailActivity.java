@@ -33,11 +33,11 @@ public class DetailActivity extends AppCompatActivity {
     ImageView mPoster;
     ProgressBar mProgressbar;
 
+    // Helper method to check if device has an active internet connection
     private boolean isConnected() {
         ConnectivityManager connectivityManager = (ConnectivityManager) this.getSystemService(
                 Context.CONNECTIVITY_SERVICE);
 
-        //Check is device has an active internet connection
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
         return networkInfo != null && networkInfo.isConnectedOrConnecting();
     }
@@ -50,6 +50,7 @@ public class DetailActivity extends AppCompatActivity {
         //Up button to go to MainActivity
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        //Reference to the views in the layout
         mTitle = findViewById(R.id.detail_title_tv);
         mAvgRating = findViewById(R.id.detail_rating_tv);
         mReleaseDate = findViewById(R.id.detail_released_tv);
@@ -57,14 +58,20 @@ public class DetailActivity extends AppCompatActivity {
         mPoster = findViewById(R.id.detail_poster_iv);
         mErrorMessage = findViewById(R.id.tv_error_message_display_detail);
         mProgressbar = findViewById(R.id.pb_loading_indicator_detail);
+
         mProgressbar.setVisibility(View.VISIBLE);
 
+        //Get the ID of the poster that was selected
         id = getIntent().getIntExtra(MainActivity.MOVIE_KEY, 0);
 
+        //Start the AsyncTask with that ID
         FetchMovie fetchMovie = new FetchMovie();
         fetchMovie.execute();
     }
 
+    /**
+     * Helper method to download the details of the movie that the user selected in the MainActivity
+     */
     public class FetchMovie extends AsyncTask<Void, Void, Void>{
         String LOG_TAG = "FetchMovieAsyncTask";
         String title, releaseDate, avgRating, plot, imageUrl;
@@ -97,6 +104,8 @@ public class DetailActivity extends AppCompatActivity {
                 }
                 movieJson = stringBuilder.toString();
                 JSONObject result = new JSONObject(movieJson);
+
+                //Store the result in their appropriate variable
                 title = result.optString("title");
                 releaseDate = result.optString("release_date");
                 avgRating = result.optString("vote_average");
@@ -104,6 +113,7 @@ public class DetailActivity extends AppCompatActivity {
                 imageUrl = getString(R.string.api_poster_url) + result.optString("poster_path");
             } catch (Exception e){
                 e.printStackTrace();
+                //If there is any error with parsing, then show the default error message
                 mErrorMessage.setVisibility(View.VISIBLE);
 
             } finally{
@@ -123,10 +133,14 @@ public class DetailActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Void aVoid) {
+
+            //Hide the progress bar and error message view when the result has been parsed
             mProgressbar.setVisibility(View.GONE);
             mErrorMessage.setVisibility(View.GONE);
 
             if (!isConnected()) {
+
+                //If device has no connection, then change the error message to current string
                 mErrorMessage.setVisibility(View.VISIBLE);
                 mErrorMessage.setText(R.string.no_connection);
             } else {
@@ -134,6 +148,8 @@ public class DetailActivity extends AppCompatActivity {
                 mErrorMessage.setVisibility(View.GONE);
                 getSupportActionBar().setTitle(title);
             }
+
+            // Set the text to the downloaded JSON of the current movie
             mTitle.setText(title);
             mAvgRating.setText("User Rating: " + avgRating);
             mPlot.setText("Overview: " + "\n" + plot);

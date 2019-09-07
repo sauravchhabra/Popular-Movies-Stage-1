@@ -23,9 +23,9 @@ public class MoviesAdapter extends BaseAdapter {
     private ArrayList<String> mPosters;
     private String[] mPosterUrl;
 
-    private static final String API_URL = "http://image.tmdb.org/t/p/w185";
     private final String LOG_TAG = getClass().toString();
 
+    //Constructor to get the image url for each movie in the list
     public MoviesAdapter(Context context, ArrayList<String> moviesList) {
         mContext = context;
         mPosters = moviesList;
@@ -33,7 +33,7 @@ public class MoviesAdapter extends BaseAdapter {
         try {
             mPosterUrl = new String[mPosters.size()];
             for (int i = 0; i < mPosterUrl.length; i++) {
-                mPosterUrl[i] = API_URL + mPosters.get(i);
+                mPosterUrl[i] = R.string.api_poster_url + mPosters.get(i);
             }
         } catch (Exception e) {
             Log.e(LOG_TAG, "Error in Adapter", e);
@@ -55,6 +55,13 @@ public class MoviesAdapter extends BaseAdapter {
         return null;
     }
 
+    /**
+     * A simple method to set the imageview to the movie poster from the url
+     * @param position current position of the movie poster
+     * @param view at which the image is being added
+     * @param viewGroup parent which holds the view
+     * @return image view with the current movie poster
+     */
     @Override
     @NonNull
     public View getView(int position, View view, @NonNull ViewGroup viewGroup) {
